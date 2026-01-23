@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os
 
 
@@ -215,5 +214,6 @@ def run_analysis_task(self, video_url):
 
         if tmp_path and os.path.exists(tmp_path):
             os.remove(tmp_path)
+
 
 
