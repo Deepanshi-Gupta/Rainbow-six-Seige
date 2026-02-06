@@ -12,7 +12,7 @@ MOCK_ANALYSIS = os.getenv('MOCK_ANALYSIS', 'false').lower() == 'true'
 
 # GROQ Configuration
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_API_KEY = os.getenv('GROQ_API_KEY', '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')
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
@@ -379,4 +379,5 @@ REMEMBER: Be a coach, not a statistics reporter. Focus on WHY and HOW, not just 
             "weaknesses": ["AI service failed to process gameplay."],
             "coaching_tips": ["Please try again later or re-upload the video."]
         }
+
 
