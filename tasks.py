@@ -50,7 +50,8 @@ from utils import format_final_json
 
 
 
-
+# Configure logging
+logger = logging.getLogger(__name__)
 
 
 
@@ -104,47 +105,23 @@ def run_analysis_task(self, video_url):
 
     try:
 
+        # Always download video first to avoid S3 streaming timeouts
+        publish_update(job_id, "processing", detail="Downloading R6S Replay...")
 
+        r = requests.get(video_url, stream=True, timeout=300)
+        r.raise_for_status()
 
-        # Try streaming directly from URL first (fastest option)
+        f = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+        tmp_path = f.name
 
-        publish_update(job_id, "processing", detail="Analyzing video from stream...")
+        for chunk in r.iter_content(8192):
+            f.write(chunk)
+        f.close()
 
-        
+        logger.info(f"Downloaded video to {tmp_path}")
 
-        try:
-
-            # Attempt direct URL streaming
-
-            metrics = video_analyzer.analyze_video(video_url)
-
-            
-
-        except Exception as stream_error:
-
-            # Fallback: Download if streaming fails
-
-            logger.warning(f"Streaming failed: {stream_error}. Falling back to download.")
-
-            publish_update(job_id, "processing", detail="Downloading R6 Replay...")
-
-            
-
-            r = requests.get(video_url, stream=True)
-
-            f = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-
-            tmp_path = f.name
-
-            for chunk in r.iter_content(8192): f.write(chunk)
-
-            f.close()
-
-            
-
-            publish_update(job_id, "processing", detail="Scanning for Operators & Objectives...")
-
-            metrics = video_analyzer.analyze_video(tmp_path)
+        publish_update(job_id, "processing", detail="Scanning for Operators & Objectives...")
+        metrics = video_analyzer.analyze_video(tmp_path)
 
 
 
@@ -214,6 +191,3 @@ def run_analysis_task(self, video_url):
 
         if tmp_path and os.path.exists(tmp_path):
             os.remove(tmp_path)
-
-
-

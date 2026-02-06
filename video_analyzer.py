@@ -557,13 +557,14 @@ def process_batch(batch_data):
 
 
 
-        # Operator Detection using Keras Model
-        operator_roi = get_roi_crop(frame, 'operator')
-        if operator_roi is not None:
-            try:
-                operator_prediction = predict_operator(operator_roi)
-            except Exception as e:
-                logger.error(f"Operator detection error at {ts:.1f}s: {e}")
+        # Operator Detection using Keras Model (process every N frames for accuracy)
+        if f_idx % config.OPERATOR_PROCESS_EVERY_N_FRAMES == 0:
+            operator_roi = get_roi_crop(frame, 'operator')
+            if operator_roi is not None:
+                try:
+                    operator_prediction = predict_operator(operator_roi)
+                except Exception as e:
+                    logger.error(f"Operator detection error at {ts:.1f}s: {e}")
 
 
 
