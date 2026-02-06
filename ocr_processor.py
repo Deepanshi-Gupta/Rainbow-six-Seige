@@ -30,7 +30,7 @@ def initialize_reader():
 
         # gpu=True is critical for performance on your AWS instance
 
-        reader = easyocr.Reader(['en'], gpu=True)
+        reader = easyocr.Reader(['en'], gpu=False)
 
         logger.info("EasyOCR model loaded successfully.")
 

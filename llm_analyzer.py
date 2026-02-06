@@ -1,15 +1,18 @@
 import json
 import re
+import os
 import requests
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Check for mock mode
+MOCK_ANALYSIS = os.getenv('MOCK_ANALYSIS', 'false').lower() == 'true'
 
 # GROQ Configuration
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_API_KEY = 
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', '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')
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
@@ -22,6 +25,20 @@ def generate_insights(metrics: dict) -> dict:
     - Low detection confidence handling
     - Behavioral performance analysis
     """
+
+    # MOCK MODE: Return fake LLM response for testing
+    if MOCK_ANALYSIS:
+        logger.info("MOCK_ANALYSIS: Returning mock LLM insights")
+        return {
+            "performance_score": 75.0,
+            "aim_stability": 70.0,
+            "playstyle": "Aggressive Fragger",
+            "strengths": ["Good kill count", "Map awareness"],
+            "weaknesses": ["Death count could improve"],
+            "recommendations": ["Focus on utility usage", "Work on crosshair placement"],
+            "summary": "Mock analysis: Solid performance with room for improvement.",
+            "match_insight": "Test match analysis completed successfully."
+        }
 
     try:
         logger.info("=" * 60)
@@ -275,7 +292,7 @@ REMEMBER: Be a coach, not a statistics reporter. Focus on WHY and HOW, not just 
         payload = {
             "model": GROQ_MODEL,
             "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.4,  # Slightly increased for more diverse behavioral insights
+            "temperature": 0.7,  # Slightly increased for more diverse behavioral insights
             "max_tokens": 1200  # Increased for comprehensive analysis with behavioral details
         }
 
